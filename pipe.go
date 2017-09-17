@@ -21,6 +21,7 @@ import (
 //sys localAlloc(uFlags uint32, length uint32) (ptr uintptr) = LocalAlloc
 
 const (
+	cERROR_FILE_NOT_FOUND = syscall.Errno(2)
 	cERROR_PIPE_BUSY      = syscall.Errno(231)
 	cERROR_PIPE_CONNECTED = syscall.Errno(535)
 	cERROR_SEM_TIMEOUT    = syscall.Errno(121)
@@ -144,7 +145,7 @@ func DialPipe(path string, timeout *time.Duration) (net.Conn, error) {
 	var h syscall.Handle
 	for {
 		h, err = createFile(path, syscall.GENERIC_READ|syscall.GENERIC_WRITE, 0, nil, syscall.OPEN_EXISTING, syscall.FILE_FLAG_OVERLAPPED|cSECURITY_SQOS_PRESENT|cSECURITY_ANONYMOUS, 0)
-		if err != cERROR_PIPE_BUSY {
+		if err != cERROR_PIPE_BUSY && err != cERROR_FILE_NOT_FOUND {
 			break
 		}
 		now := time.Now()

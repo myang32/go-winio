@@ -4,6 +4,7 @@ package winio
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -145,6 +146,7 @@ func DialPipe(path string, timeout *time.Duration) (net.Conn, error) {
 	var h syscall.Handle
 	for {
 		h, err = createFile(path, syscall.GENERIC_READ|syscall.GENERIC_WRITE, 0, nil, syscall.OPEN_EXISTING, syscall.FILE_FLAG_OVERLAPPED|cSECURITY_SQOS_PRESENT|cSECURITY_ANONYMOUS, 0)
+		fmt.Println("DialPipe createFile err", err)
 		if err != cERROR_PIPE_BUSY && err != cERROR_FILE_NOT_FOUND {
 			break
 		}
@@ -160,12 +162,14 @@ func DialPipe(path string, timeout *time.Duration) (net.Conn, error) {
 		err = waitNamedPipe(path, ms)
 		if err != nil {
 			if err == cERROR_SEM_TIMEOUT {
+				fmt.Println("DialPipe returns timeout")
 				return nil, ErrTimeout
 			}
 			break
 		}
 	}
 	if err != nil {
+		fmt.Println("DialPipe returns err", err)
 		return nil, &os.PathError{Op: "open", Path: path, Err: err}
 	}
 

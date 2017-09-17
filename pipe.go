@@ -159,8 +159,10 @@ func DialPipe(path string, timeout *time.Duration) (net.Conn, error) {
 		} else {
 			ms = uint32(absTimeout.Sub(now).Nanoseconds() / 1000 / 1000)
 		}
+		fmt.Println("DialPipe waitNamedPipe ms", ms)
 		err = waitNamedPipe(path, ms)
 		if err != nil {
+			fmt.Println("DialPipe waitNamedPipe returns err", err)
 			if err == cERROR_SEM_TIMEOUT {
 				fmt.Println("DialPipe returns timeout")
 				return nil, ErrTimeout

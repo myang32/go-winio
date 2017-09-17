@@ -176,12 +176,14 @@ func DialPipe(path string, timeout *time.Duration) (net.Conn, error) {
 	var flags uint32
 	err = getNamedPipeInfo(h, &flags, nil, nil, nil)
 	if err != nil {
+		fmt.Println("DialPipe getNamedPipeInfo returns err", err)
 		return nil, err
 	}
 
 	var state uint32
 	err = getNamedPipeHandleState(h, &state, nil, nil, nil, nil, 0)
 	if err != nil {
+		fmt.Println("DialPipe getNamedPipeHandleState returns err", err)
 		return nil, err
 	}
 
@@ -202,6 +204,7 @@ func DialPipe(path string, timeout *time.Duration) (net.Conn, error) {
 			win32Pipe: win32Pipe{win32File: f, path: path},
 		}, nil
 	}
+	fmt.Println("DialPipe returns success")
 	return &win32Pipe{win32File: f, path: path}, nil
 }
 
